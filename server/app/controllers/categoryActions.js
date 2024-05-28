@@ -1,3 +1,7 @@
+const tables = require("../../database/tables");
+
+// Some data to make the trick
+
 const categories = [
   {
     id: 1,
@@ -9,29 +13,26 @@ const categories = [
   },
 ];
 
-const browse = (req, res) => {
-  if (req.query.q != null) {
-    const filteredCategories = categories.filter((categorie) =>
-      categorie.name.includes(req.query.q)
-    );
+// Declare the actions
 
-    res.json(filteredCategories);
-  } else {
-    res.json(categories);
-  }
+const browse = async (req, res) => {
+  const categoriesFromDB = await tables.category.readAll();
+
+  res.json(categoriesFromDB);
 };
 
 const read = (req, res) => {
   const parsedId = parseInt(req.params.id, 10);
 
-  const categorie = categories.find((p) => p.id === parsedId);
+  const category = categories.find((p) => p.id === parsedId);
 
-  if (categorie != null) {
-    res.json(categorie);
+  if (category != null) {
+    res.json(category);
   } else {
     res.sendStatus(404);
   }
 };
 
-// Exportation des fonctions pour les importer ailleurs
+// Export them to import them somewhere else
+
 module.exports = { browse, read };

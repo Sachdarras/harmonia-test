@@ -1,4 +1,5 @@
 // Some data to make the trick
+const tables = require("../../database/tables");
 
 const programs = [
   {
@@ -23,19 +24,20 @@ const programs = [
   },
 ];
 
-// Declare the action
+// Déclarer l'action de navigation
 
-const browse = (req, res) => {
-  if (req.query.q != null) {
-    const filteredPrograms = programs.filter((program) =>
-      program.synopsis.includes(req.query.q)
-    );
-
-    res.json(filteredPrograms);
-  } else {
-    res.json(programs);
+const browse = async (req, res) => {
+  try {
+    const programsFromDB = await tables.program.readAll(); // Corriger la faute de frappe 'progam' à 'program'
+    res.json(programsFromDB);
+  } catch (error) {
+    res.status(500).json({
+      error:
+        "Failed to fetch programs from the database; please try again later.",
+    });
   }
 };
+
 const read = (req, res) => {
   const parsedId = parseInt(req.params.id, 10);
 
@@ -48,6 +50,6 @@ const read = (req, res) => {
   }
 };
 
-// Export it to import it somewhere else
+// Exporter les actions pour les importer ailleurs
 
 module.exports = { browse, read };
